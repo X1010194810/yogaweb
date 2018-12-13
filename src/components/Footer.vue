@@ -2,7 +2,7 @@
     <footer>
       <div class="footer-body">
           <div class="footer-body-company">
-            版权所有：云南灵度网络科技有限公司
+            版权所有：云南民族大学中印瑜伽学院
           </div>
           <div class="footer-body-code">
             © 2013-2018 京ICP备11008151号 京公网安备11010802014853

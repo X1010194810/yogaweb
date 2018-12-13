@@ -2,10 +2,10 @@
     <header>
       <div class="header-body">
         <div class="header-body-button">
-          <label v-if="!Index"><a data-toggle="modal" @click="getImageData()" data-target="#myModal">登录 </a>|<a> 注册</a></label>
+          <label v-if="!Index"><a @click="getImageData()" data-toggle="modal" data-target="#ModalLogin">登录 </a>|<a data-toggle="modal" data-target="#ModalRegister"> 注册</a></label>
           <label v-if="Index"><a >{{userName}} </a>|<a @click="getBaseInfo()"> 个人中心</a></label>
         </div>
-        <div class="header-title">OSS信息管理平台</div>
+        <div class="header-title" @click="BackHome()">云南民族大学中印瑜伽学院瑜伽非学历教育综合信息平台</div>
         <div class="container header-search">
           <div class="row">
             <div class="col-md-4 col-md-offset-4">
@@ -19,81 +19,49 @@
           </div>
         </div>
       </div>
-
-      <div class="modal" id="myModal" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content" >
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
-              </button>
-              <h4 class="modal-title" id="myModalLabel">
-                用户登录
-              </h4>
-            </div>
-            <div class="modal-body">
-              <div class="form-horizontal" role="form">
-                <div class="form-group">
-                  <label for="firstname" class="col-sm-2 control-label">用户名</label>
-                  <div class="col-sm-10">
-                    <input type="text" class="form-control" id="firstname" v-model="resquesInfo.userName" placeholder="请输入11位手机号码">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-sm-2 control-label">密 码</label>
-                  <div class="col-sm-10">
-                    <input type="password" class="form-control" v-model="resquesInfo.loginKey" placeholder="请输入6至12位手机密码">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-sm-2 control-label">验证码</label>
-                  <div class="col-sm-6">
-                    <input type="text" class="form-control" v-model="resquesInfo.imageCode" placeholder="请输入右侧图片验证码">
-                  </div>
-                  <div class="col-sm-4">
-                    <img :src="imageData" height="34">
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" @click="SubmitLogin()" class="btn btn-primary col-md-10 col-md-offset-2">
-                登录
-              </button>
-            </div>
-          </div>
-        </div><!-- /.modal-dialog -->
-      </div><!-- /.modal -->
+      <LoginModal  :resquesInfo="resquesInfo" :imageData="imageData" :SubmitLogin="SubmitLogin" :getImageData="getImageData" :getRegisterCode="getRegisterCode"  :SubmitRegister="SubmitRegister" ></LoginModal>
     </header>
 </template>
 
 <script>
+  import LoginModal from '../components/LoginModal';
+  import Global from '../components/Global';
+  import Vue from 'vue'
+  Vue.prototype.GLOBALS = Global;
+
     export default {
       name: "Header",
       data: function () {
         return{
           Index: false,
           userName: '',
-          idCode: '123',
-          imageData: '',
-          imageKey: '',
-          staffAid: '',
-          staffName: '',
+          idCode: '',
+          imageData: ['0', '1'],
           resquesInfo: {
-            userName: '18487166238',
-            loginKey: '454545',
-            imageCode: ''
-          }
+            userName: '',
+            loginKey: '',
+            loginKey2: '',
+            imageCode: '',
+            imageKey: '',
+            messageCode: '',
+          },
         }
       },
 
       methods:{
+
         // 跳转个人中心
         getBaseInfo: function () {
           var that = this;
           that.$router.push({
-            // 你要跳转的地址
-            name: 'BaseInfo',
+            name: 'PersonCenter',
+          })
+        },
 
+        BackHome: function () {
+          var that = this;
+          that.$router.push({
+            name: 'Home',
           })
         },
 
@@ -101,61 +69,108 @@
         getCertList: function (e) {
           var that = this;
           that.$router.push({
-            // 你要跳转的地址
-            name: 'ListCert',
+            name: 'CertList',
             params: {
               idCode: e,
             },
           })
         },
 
-        // 获取图片验证码
+        // 获取登录图片验证码
         getImageData: function () {
           let that = this;
-          let url = that.GLOBAL.HTTP_URL + '/login/getImageCode';
+          let url = that.GLOBALS.LOGIN_GETIMAGECODE;
           $.post(url,{},{emulateJSON:true}).then(function(res){
             if(res.code == '10000'){
-              that.imageData = res.data.imageData,
-              that.imageKey = res.data.imageKey
+              Vue.set(that.imageData,0, res.data.imageData)
+              that.resquesInfo.imageKey = res.data.imageKey
             }
           }, function (res) {
           });
         },
 
-        // 登陆
-        SubmitLogin: function () {
-          var that = this;
-          let url = that.GLOBAL.HTTP_URL + '/login/userLogin';
-          $.post(url,{userName: this.resquesInfo.userName,loginKey: this.resquesInfo.loginKey,imageCode: that.resquesInfo.imageCode,imageKey: that.imageKey},{emulateJSON:true}).then(function(res){
+        // 获取注册短信验证码
+        getRegisterCode: function (e) {
+          const that = this;
+          var ResquestInfo = new URLSearchParams();
+          ResquestInfo.append("phone",that.resquesInfo.userName);
+          ResquestInfo.append("imageCode",e );
+          ResquestInfo.append("imageKey",that.resquesInfo.imageKey);
+          that.VuegetResquest(that.GLOBALS.LOGIN_USERREGISTERSENDMESSAGE,ResquestInfo,function(res){
+            console.log(res)
+          },function (res) {console.log(res.message)});
+        },
+
+        // 登录
+        SubmitLogin: function (e) {
+          const that = this;
+          var ResquestInfo = new URLSearchParams();
+          ResquestInfo.append("userName",that.resquesInfo.userName);
+          ResquestInfo.append("loginKey",that.resquesInfo.loginKey);
+          ResquestInfo.append("imageCode",e);
+          ResquestInfo.append("imageKey",that.resquesInfo.imageKey);
+          that.VuegetResquest(that.GLOBALS.LOGIN_USERLOGIN,ResquestInfo,function(res){
             // console.log(res)
             if (res.code == '10000') {
               window.location.reload();
               window.localStorage.setItem('Token', res.data.token)
               window.localStorage.setItem('userName', res.data.userName)
-              $('#myModal').modal('hide')
+              $('#ModalLogin').modal('hide')
               that.$router.push({
-                // 跳转地址
                 name: 'BaseInfo',
               })
             }
-          }, function (res) {
+          },function (res) {
+            alert(res.message)
+            that.getImageData();
+            // console.log(res.message)
           });
+        },
+
+        // 注册
+        SubmitRegister: function (e) {
+          const that = this;
+          var ResquestInfo = new URLSearchParams();
+          ResquestInfo.append("phone", that.resquesInfo.userName);
+          ResquestInfo.append("loginKey", that.resquesInfo.loginKey);
+          ResquestInfo.append("phoneCode", e);
+          console.log(that.resquesInfo.userName)
+          if(!that.checkPhone(that.resquesInfo.userName)){
+            alert('请输入正确的11位手机号')
+          }else if(!that.checkPassword(that.resquesInfo.loginKey)){
+            alert('请输入由数字、字母、下划线组合的不少于8位不大于20位的密码')
+          }else if(!that.resquesInfo.loginKey == that.resquesInfo.loginKey2){
+            alert('请保证两次输入的密码一致')
+          }else {
+            that.VuegetResquest(that.GLOBALS.LOGIN_USERREGISTER, ResquestInfo, function (res) {
+              console.log(res)
+              if (res.code == '10000') {
+                $('#ModalLogin').popover('hide')
+                $('#ModalRegister').modal();
+              }
+            }, function (res) {
+              console.log(res.message)
+            });
+          }
+
+
         }
-
-
       },
-      created: function () {
-        let userName = window.localStorage.getItem('userName')
 
+      components: {
+        LoginModal,
+      },
+
+      created: function () {
+        console.log(this.resquesInfo.userName)
+        let userName = window.localStorage.getItem('userName');
         if(userName == null) {
           this.Index = false
-          this.userName = window.localStorage.getItem('userName')
+          this.userName = '未登录'
         }else {
           this.Index = true
           this.userName = window.localStorage.getItem('userName')
         }
-
-        // this.Token = window.localStorage.getItem('Token')
       }
     }
 
@@ -183,7 +198,7 @@
   }
   .header-body {
     user-select: none;
-    background-image: url("../assets/img/bg.png");
+    background-image: url("../assets/img/bg.jpg");
     background-repeat:no-repeat;
     background-size:100% 100%;
     -moz-background-size:100% 100%;
