@@ -9,10 +9,9 @@
               <div>学院公告</div> <div>more  »</div>
             </div>
             <div class="my-panel-body-list">
-              <!--学院公告-->
               <div>
                 <ul class="list-group my_list">
-                  <li class="my_list_item" @click="bindListArticle(item.articleAid)" v-for="item in CollegeNotic">
+                  <li class="my_list_item" @click="bindArticleInfo(item.articleAid)" v-for="item in NoticList">
                     <a><span>{{item.articleTitle}}</span></a><a>{{item.articleCreateTime}}</a>
                   </li>
                 </ul>
@@ -55,7 +54,7 @@
               <div>学院简介</div>
             </div>
             <div class="my-panel-body-list">
-              <p class="my_introduce" >{{SchoolIntroduce.departmentMemo}}</p>
+              <p class="my_introduce" >{{CollegeInfo.departmentMemo}}</p>
             </div>
           </div>
         </div>
@@ -72,10 +71,10 @@
               <div>
                 <ul class="list-group my_list">
                   <li class="my_list_item my_contact">
-                    <a>咨询电话：<span>{{SchoolIntroduce.departmentPhone}}</span></a>
+                    <label>咨询电话：<span>{{CollegeInfo.departmentPhone}}</span></label>
                   </li>
                   <li class="my_list_item my_contact">
-                    <a>详细地址：<span>{{SchoolIntroduce.departmentAddress}}</span></a>
+                    <label>详细地址：<span>{{CollegeInfo.departmentAddress}}</span></label>
                   </li>
                 </ul>
               </div>
@@ -89,33 +88,26 @@
 
 <script>
   import CollegeInfo from '../page/CollegeInfo';
-  import Global from '../components/Global';
 
-  import Vue from 'vue'
-  Vue.prototype.GLOBALS = Global;
   export default {
     "/home": "Home",
     data: function () {
       return{
-        Col: '234',
-        // 学院公告
-        CollegeNotic: [],
+        NoticList: [],          // 学院公告
+        CollegeList:[
 
-        // 招生学院
-        CollegeList:[],
-
-        // 总院信息
-        SchoolIntroduce: '',
+        ],        // 招生学院
+        CollegeInfo: '',       // 学院简介
       }
     },
     methods:{
 
-      // 获取公告列表
+      // 获取公告(文章)列表
       getArticleList: function () {
         const that = this;
         var ResquestInfo = new URLSearchParams();
         that.VuegetResquest(that.GLOBALS.INDEX_ARTICLE_LIST,ResquestInfo,function(res){
-          that.CollegeNotic = res.data
+          that.NoticList = res.data
         },function (res) {console.log(res.message)});
       },
 
@@ -133,18 +125,17 @@
         const that = this;
         var ResquestInfo = new URLSearchParams();
         that.VuegetResquest(that.GLOBALS.INDEX_COLLEGE_INFO,ResquestInfo,function(res){
-          that.SchoolIntroduce = res.data
+          that.CollegeInfo = res.data
         },function (res) {console.log(res.message)});
       },
 
       // 跳转公告详情
-      bindListArticle: function (e){
+      bindArticleInfo: function (e){
         const that = this;
         that.$router.push({
           name: 'ArticleInfo',
           params: {
             aid: e,
-            id: '0'
           },
         })
       },
@@ -160,20 +151,14 @@
           },
         })
       },
-
-
     },
 
     // 项目初始化
     created: function(){
-      this.getArticleList()   // 获取公告列表
-      this.getCollegeList()   // 获取学院列表
-      this.getCollegeInfo()   // 总院信息
+      this.getArticleList();   // 获取公告列表
+      this.getCollegeList();   // 获取学院列表
+      this.getCollegeInfo();   // 总院信息
     },
-
-    components: {
-      // ListCollege
-    }
   }
 </script>
 
@@ -204,7 +189,7 @@
     min-height: 216px;
   }
   .my_list {
-    border: 0px;
+    border: 0;
   }
   .my_list_item {
     display: flex;
@@ -260,6 +245,6 @@
 
   /*联系方式*/
   .my_contact {
-    border-bottom: 0px;
+    border-bottom: 0;
   }
 </style>
