@@ -115,7 +115,7 @@
                 }, '取消报名'),
                 h('Button', {
                   props: {
-                    type: 'success',
+                    type: 'success',  
                     size: 'small'
                   },
                   on: {
