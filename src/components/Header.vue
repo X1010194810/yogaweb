@@ -21,24 +21,7 @@
       </div>
 
       <Modal v-model="modal" title="用户注册" @on-ok="SubmitRegister" ok-text= "注册">
-        <!--<Form class="top" ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100" >-->
-          <!--<FormItem label="手机号" prop="Phone">-->
-            <!--<Input v-model="resquesInfo.userName"  placeholder="请输入11位手机号码1"></Input>-->
-          <!--</FormItem>-->
-          <!--<FormItem label="密码" prop="passwd">-->
-            <!--<Input v-model="resquesInfo.loginKey" type="password"></Input>-->
-          <!--</FormItem>-->
-          <!--<FormItem label="确认密码" prop="Password2">-->
-            <!--<Input v-model="resquesInfo.loginKey2" type="password" placeholder="确认密码"></Input>-->
-          <!--</FormItem>-->
-          <!--<FormItem label="验证码" prop="VCode">-->
-            <!--<Input v-model="resquesInfo.imageCode" type="text" placeholder="请输入右侧图片验证码"></Input>-->
-          <!--</FormItem>-->
-          <!--<FormItem label="短信验证码" prop="MCode">-->
-            <!--<Input v-model="resquesInfo.messageCode" placeholder="请输入短信验证码"></Input>-->
-          <!--</FormItem>-->
-        <!--</Form>-->
-        <Form ref="formCustom" :model="formCustom" :rules="ruleCustom" :label-width="80">
+        <Form ref="resquesInfo" :model="resquesInfo" :rules="ruleCustom" :label-width="80">
           <FormItem label="手机号" prop="Phone">
             <Input v-model="resquesInfo.userName" placeholder="请输入11位手机号码"></Input>
           </FormItem>
@@ -46,18 +29,19 @@
             <Input type="password" v-model="resquesInfo.loginKey" placeholder="请输入由数字、字母、下划线组合的不少于8位不大于20位的密码"></Input>
           </FormItem>
           <FormItem label="确认密码" prop="passwdCheck">
-            <Input type="password" v-model="formCustom.passwdCheck" placeholder="请保证两次输入的密码一致"></Input>
+            <Input type="password" v-model="resquesInfo.loginKey2" placeholder="请保证两次输入的密码一致"></Input>
           </FormItem>
-          <FormItem label="验证码" prop="VCode">
-          <Input v-model="resquesInfo.imageCode" type="text" placeholder="请输入右侧图片验证码"></Input>
+          <FormItem label="验证码" prop="VCode" >
+            <Input class="ivu-inputs" v-model="resquesInfo.imageCode" type="text" placeholder="请输入右侧图片验证码"></Input>
+            <img :src="imageData[0]" @click="getImageData" height="34">
           </FormItem>
           <FormItem label="短信验证码" prop="MCode">
-          <Input v-model="resquesInfo.messageCode" placeholder="请输入短信验证码"></Input>
+          <Input  class="ivu-inputs" v-model="resquesInfo.messageCode" placeholder="请输入短信验证码"></Input>
           </FormItem>
-          <FormItem>
-            <Button type="primary" @click="handleSubmit('formCustom')">Submit</Button>
-            <Button @click="handleReset('formCustom')" style="margin-left: 8px">Reset</Button>
-          </FormItem>
+          <!--<FormItem>-->
+            <!--<Button type="primary" @click="handleSubmit('formCustom')">Submit</Button>-->
+            <!--<Button @click="handleReset('formCustom')" style="margin-left: 8px">Reset</Button>-->
+          <!--</FormItem>-->
         </Form>
       </Modal>
 
@@ -72,75 +56,64 @@
     export default {
       name: "Header",
       data: function () {
-        // const validatePhone = (rule, value, callback) => {
-        //   console.log(this.resquesInfo.loginKey);
-        //   console.log(this.checkPassword(this.resquesInfo.loginKey));
-        //   if (this.checkPassword(this.resquesInfo.loginKey)) {
-        //     callback(new Error('请输入由数字、字母、下划线组合的不少于8位不大于20位的密码'));
-        //   } else {
-        //     if (this.formCustom.passwdCheck !== '') {
-        //       // 对第二个密码框单独验证
-        //       this.$refs.formCustom.validateField('passwdCheck');
-        //     }
-        //     callback();
-        //   }
-        // };
+        // 手机号验证
+        const validatePhone = (rule, value, callback) => {
+          if (!this.checkPhone(this.resquesInfo.userName)) {
+            callback(new Error('请输入正确的11位手机号'));
+          }
+        };
+
+        // 密码判断
         const validatePass = (rule, value, callback) => {
-          console.log(this.resquesInfo.loginKey);
-          console.log(this.checkPassword(this.resquesInfo.loginKey));
-          if (this.checkPassword(this.resquesInfo.loginKey)) {
+          if (!this.checkPassword(this.resquesInfo.loginKey)) {
             callback(new Error('请输入由数字、字母、下划线组合的不少于8位不大于20位的密码'));
           } else {
-            if (this.formCustom.passwdCheck !== '') {
+            if (this.resquesInfo.loginKey !== this.resquesInfo.loginKey2) {
               // 对第二个密码框单独验证
-              this.$refs.formCustom.validateField('passwdCheck');
+              this.$refs.resquesInfo.validateField('passwdCheck');
             }
             callback();
           }
         };
+
+        // 确认密码判断
         const validatePassCheck = (rule, value, callback) => {
-          if (value === '') {
-            callback(new Error('Please enter your password again'));
-          } else if (value !== this.formCustom.passwd) {
-            callback(new Error('The two input passwords do not match!'));
-          } else {
-            callback();
+          if (this.resquesInfo.loginKey !== this.resquesInfo.loginKey2) {
+            callback(new Error('请保证两次输入的密码一致'));
           }
         };
-        const validateAge = (rule, value, callback) => {
-          if (!value) {
-            return callback(new Error('Age cannot be empty'));
+
+        // 图片验证码
+        const validateVCode = (rule, value, callback) => {
+          if (!this.checkVCode(this.resquesInfo.imageCode)) {
+            return callback(new Error('请输入正确的4位验证码'));
           }
-          // 模拟异步验证效果
-          setTimeout(() => {
-            if (!Number.isInteger(value)) {
-              callback(new Error('Please enter a numeric value'));
-            } else {
-              if (value < 18) {
-                callback(new Error('Must be over 18 years of age'));
-              } else {
-                callback();
-              }
-            }
-          }, 1000);
+        };
+
+        // 短信验证码
+        const validateMCode = (rule, value, callback) => {
+          if (!this.checkMCode(this.resquesInfo.messageCode)) {
+            return callback(new Error('请输入正确的4位短信验证码'));
+          }
         };
 
         return{
           modal: false,
-          formCustom: {
-            passwd: '',
-            passwdCheck: '',
-            age: ''
-          },
           ruleCustom: {
+            Phone: [
+              { validator: validatePhone, trigger: 'blur' }
+            ],
             passwd: [
               { validator: validatePass, trigger: 'blur' }
             ],
             passwdCheck: [
               { validator: validatePassCheck, trigger: 'blur' }
             ],
-            age: [
-              { validator: validateAge, trigger: 'blur' }
+            VCode: [
+              { validator: validateVCode, trigger: 'blur' }
+            ],
+            MCode: [
+              { validator: validateMCode, trigger: 'blur' }
             ]
           },
 
@@ -177,6 +150,7 @@
         },
         showRegister(){
           this.modal = true;
+          this.getImageData();
         },
         validateField(e){
           console.log(e)
@@ -215,7 +189,7 @@
           let url = that.GLOBALS.LOGIN_GETIMAGECODE;
           $.post(url,{},{emulateJSON:true}).then(function(res){
               if(res.code === 10000){
-                console.log(res)
+                console.log(res);
                 Vue.set(that.imageData,0, res.data.imageData);
                 that.resquesInfo.imageKey = res.data.imageKey
               }
@@ -329,6 +303,10 @@
 </script>
 
 <style scoped>
+  .ivu-inputs {
+    width: 220px;
+    margin-right: 60px;
+  }
 
   .form {
     padding: 20px;
