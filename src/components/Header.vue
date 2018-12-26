@@ -20,7 +20,7 @@
         </div>
       </div>
 
-      <Modal v-model="modal" title="用户注册" @on-ok="SubmitRegister" ok-text= "注册">
+      <Modal v-model="modal" title="用户注册" :loading="loading" @on-ok="SubmitRegister()" ok-text= "注册">
         <Form ref="resquesInfo" :model="resquesInfo" :rules="ruleCustom" :label-width="80">
           <FormItem label="手机号" prop="Phone">
             <Input v-model="resquesInfo.userName" placeholder="请输入11位手机号码"></Input>
@@ -36,7 +36,8 @@
             <img :src="imageData[0]" @click="getImageData" height="34">
           </FormItem>
           <FormItem label="短信验证码" prop="MCode">
-          <Input  class="ivu-inputs" v-model="resquesInfo.messageCode" placeholder="请输入短信验证码"></Input>
+            <Input class="ivu-inputs" v-model="resquesInfo.messageCode" placeholder="请输入短信验证码"></Input>
+            <Button type="success" @click="getRegisterCode()" disabled="IsSend">{{value}}</Button>
           </FormItem>
           <!--<FormItem>-->
             <!--<Button type="primary" @click="handleSubmit('formCustom')">Submit</Button>-->
@@ -45,7 +46,7 @@
         </Form>
       </Modal>
 
-      <!--<LoginModal  :resquesInfo="resquesInfo" :imageData="imageData" :SubmitLogin="SubmitLogin" :getImageData="getImageData" :getRegisterCode="getRegisterCode"  :SubmitRegister="SubmitRegister" :value="value"></LoginModal>-->
+      <LoginModal  :resquesInfo="resquesInfo" :imageData="imageData" :SubmitLogin="SubmitLogin" :getImageData="getImageData" :getRegisterCode="getRegisterCode"  :SubmitRegister="SubmitRegister" :value="value"></LoginModal>
     </header>
 </template>
 
@@ -55,7 +56,7 @@
 
     export default {
       name: "Header",
-      data: function () {
+      data: function ()             {
         // 手机号验证
         const validatePhone = (rule, value, callback) => {
           if (!this.checkPhone(this.resquesInfo.userName)) {
@@ -99,6 +100,8 @@
 
         return{
           modal: false,
+          loading: true,
+
           ruleCustom: {
             Phone: [
               { validator: validatePhone, trigger: 'blur' }
@@ -118,14 +121,15 @@
           },
 
           Index: false,
+          IsSend: false,
           userName: '',
           idCode: '',
           value: '获取验证码',
           imageData: ['0', '1'],
           resquesInfo: {
-            userName: '',
-            loginKey: '',
-            loginKey2: '',
+            userName: '18487147902',
+            loginKey: '123456',
+            loginKey2: '123456',
             imageCode: '',
             imageKey: '',
             messageCode: '',
@@ -185,29 +189,27 @@
 
         // 获取登录图片验证码
         getImageData: function () {
-          let that = this;
-          let url = that.GLOBALS.LOGIN_GETIMAGECODE;
-          $.post(url,{},{emulateJSON:true}).then(function(res){
-              if(res.code === 10000){
-                console.log(res);
-                Vue.set(that.imageData,0, res.data.imageData);
-                that.resquesInfo.imageKey = res.data.imageKey
-              }
-            }, function (res) {
-          });
+          const that = this;
+          var ResquestInfo = new URLSearchParams();
+          that.VuegetResquest(that.GLOBALS.LOGIN_GETIMAGECODE,ResquestInfo,function(res){
+            Vue.set(that.imageData, 0 , res.data.imageData);
+            that.resquesInfo.imageKey = res.data.imageKey;
+          },function (res) { this.$Message.warning('请输入正确的手机号和验证码');});
         },
 
         // 获取注册短信验证码
-        getRegisterCode: function (e) {
+        getRegisterCode: function () {
           const that = this;
+          console.log(that.resquesInfo.userName);
           var ResquestInfo = new URLSearchParams();
           ResquestInfo.append("phone",that.resquesInfo.userName);
-          ResquestInfo.append("imageCode",e );
+          ResquestInfo.append("imageCode", that.resquesInfo.imageCode );
           ResquestInfo.append("imageKey",that.resquesInfo.imageKey);
           that.VuegetResquest(that.GLOBALS.LOGIN_USERREGISTERSENDMESSAGE,ResquestInfo,function(res){
-            // console.log(res)
+            // this.$Message.success('获取成功');
+            console.log('获取成功');
             that.value = "已发送"
-          },function (res) {this.$Message.warning('请输入正确的手机号和验证码');  console.log(res.message)});
+          },function (res) {this.$Message.warning('请输入正确的手机号和验证码'); });
         },
 
         // 登录
@@ -239,38 +241,33 @@
 
         // 注册
         SubmitRegister: function (e) {
+          // this.modal = true;
+          // console.log(this.modal);
+          this.loading = false;
+
+          setTimeout(() => {
+            this.loading = true;
+          }, 100);
+
           const that = this;
           console.log('注册成功');
-          console.log(that.resquesInfo)
-          // var ResquestInfo = new URLSearchParams();
-          // ResquestInfo.append("phone", that.resquesInfo.userName);
-          // ResquestInfo.append("loginKey", that.resquesInfo.loginKey);
-          // ResquestInfo.append("phoneCode", e);
-          // if(!that.checkPhone(that.resquesInfo.userName)){
-          //   that.$Message.warning('请输入正确的11位手机号');
-          //   // alert('请输入正确的11位手机号')
-          // }else if(!that.checkPassword(that.resquesInfo.loginKey)){
-          //   that.$Message.warning('请输入由数字、字母、下划线组合的不少于8位不大于20位的密码');
-          // }else if(that.resquesInfo.loginKey !== that.resquesInfo.loginKey2){
-          //   alert('请保证两次输入的密码一致')
-          // }else if(!that.checkVCode(that.resquesInfo.imageCode)){
-          //   alert('验证码错误')
-          // }else if(!that.checkMCode(that.resquesInfo.messageCode)){
-          //   alert('短信验证码错误')
-          // }else {
-          //   that.VuegetResquest(that.GLOBALS.LOGIN_USERREGISTER, ResquestInfo, function (res) {
-          //     alert(res.message);
-          //     // console.log(res);
-          //     if (res.code === 10000) {
-          //       $('#ModalLogin').popover('hide');
-          //       $('#ModalRegister').popover('hide');
-          //     }
-          //   }, function (res) {
-          //     alert(res.message)
-          //     // console.log(res.message)
-          //   });
-          //   that.value = '获取验证码'
-          // }
+          console.log(that.resquesInfo);
+          var ResquestInfo = new URLSearchParams();
+          ResquestInfo.append("phone", that.resquesInfo.userName);
+          ResquestInfo.append("loginKey", that.resquesInfo.loginKey);
+          ResquestInfo.append("phoneCode", e);
+
+            that.VuegetResquest(that.GLOBALS.LOGIN_USERREGISTER, ResquestInfo, function (res) {
+              this.$Message.success(res);
+              console.log(res);
+              if (res.code === 10000) {
+                $('#ModalLogin').popover('hide');
+                $('#ModalRegister').popover('hide');
+              }
+            }, function (res) {
+              console.log(res)
+            });
+            that.value = '获取验证码'
         },
 
         // 注销
@@ -334,7 +331,7 @@
     background-size:100% 100%;
     -moz-background-size:100% 100%;
     position:relative;
-    height: 300px;
+    height: 298px;
     padding-top: 50px;
   }
   .header-body-button {
