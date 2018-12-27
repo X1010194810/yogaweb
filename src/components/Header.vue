@@ -231,7 +231,7 @@
 
         // 登录
         SubmitLogin: function (e) {
-          const that = this;
+          const that = this;   
           var ResquestInfo = new URLSearchParams();
           ResquestInfo.append("userName",that.resquesInfo.userName);
           ResquestInfo.append("loginKey",that.resquesInfo.loginKey);
