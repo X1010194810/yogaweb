@@ -3,7 +3,7 @@
     <!--基本信息-->
     <div class="col-md-12 ">
       <router-view></router-view>
-      <form class="form-horizontal" role="form" @submit="checkForm">
+      <form class="form-horizontal" role="form" >
         <div>
           <div v-if="errors.length">
             <b>Please correct the following error(s):</b>
@@ -17,14 +17,14 @@
             <div class="panel-body my-panel-body">
               <!--电话-->
               <div class="form-group form_group">
-                <label for="firstname" class="col-sm-3 control-label my_control_label">手机号</label>
+                <label class="col-sm-3 control-label my_control_label">手机号</label>
                 <div class="col-sm-9">
                   <div class="phone">{{UserInfo.userPhone}}</div>
                 </div>
               </div>
               <!--性别-->
               <div class="form-group form_group">
-                <label for="sex" class="col-sm-3 control-label my_control_label">性别</label>
+                <label class="col-sm-3 control-label my_control_label">性别</label>
                 <div class="radio form_radio">
                   <label class="radio-inline radio_inline">
                     <input type="radio" name="optionsRadiosinline" id="optionsRadios3" @change="ChangeSex('0')" value="option1" :checked="UserInfo.userSex"> 男
@@ -36,38 +36,40 @@
               </div>
               <!--身份证号码-->
               <div class="form-group form_group">
-                <label for="lastname" class="col-sm-3 control-label my_control_label">身份证号码</label>
+                <label class="col-sm-3 control-label my_control_label">身份证号码</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control form_control" maxlength="18" minlength="18" placeholder="请输入18位身份证号码" v-model="UserInfo.userId">
+                  <label for="name"><input type="text" class="form-control form_control" maxlength="18" minlength="18" placeholder="请输入18位身份证号码" v-model="UserInfo.userId"></label>
                 </div>
               </div>
               <!--国家-->
               <div class="form-group form_group">
-                <label for="lastname" class="col-sm-3 control-label my_control_label">国家</label>
+                <label class="col-sm-3 control-label my_control_label">国家</label>
                 <div class="col-sm-9">
-                  <select class="form-control form_control" v-model="UserInfo.userNationAid">
-                    <option v-for="item in NationList" :value="item.nationAid">{{item.nationName}}</option>
-                  </select>
+                  <label>
+                    <select class="form-control form_control" v-model="UserInfo.userNationAid">
+                      <option v-for="item in NationList" :value="item.nationAid">{{item.nationName}}</option>
+                    </select>
+                  </label>
                 </div>
               </div>
               <!--详细地址-->
               <div class="form-group form_group">
-                <label for="lastname" class="col-sm-3 control-label my_control_label">详细地址</label>
+                <label class="col-sm-3 control-label my_control_label">详细地址</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control form_control" minlength="4" maxlength="30" id="Info" v-model="UserInfo.userAddress" placeholder="请输入详细地址">
+                  <label for="name"><input type="text" class="form-control form_control" minlength="4" maxlength="30" id="Info" v-model="UserInfo.userAddress" placeholder="请输入详细地址"></label>
                 </div>
               </div>
               <!--正规照片-->
               <div class="form-group form_group">
-                <label for="lastname" class="col-sm-3 control-label my_control_label">正规照片</label>
+                <label class="col-sm-3 control-label my_control_label">正规照片</label>
                 <div class="col-sm-9">
                   <div class="upload">
                   <div class="edit">
                     <div class="avatar">
                       <div class="img">
-                        <img :src="avatar2" height="150" width="300" @click="setAvatarPhoto">
+                        <img :src="UserInfo.userPhotoFileUrl" height="150" width="300" @click="setAvatarPhoto">
                       </div>
-                      <input type="file" name="avatar2" accept="image/gif,image/jpeg,image/jpg,image/png" style="display:none" @change="changeImage($event, '0')" ref="avatarInputPhoto">
+                      <input type="file" name="avatar2" accept="image/gif,image/jpeg,image/jpg,image/png" style="display:none" @change="changeImage($event, 0)" ref="avatarInputPhoto">
                     </div>
                   </div>
                   </div>
@@ -87,50 +89,57 @@
             <div class="panel-body my-panel-body">
               <!--姓名-->
               <div class="form-group form_group">
-                <label for="firstname" class="col-sm-3 control-label my_control_label">姓名</label>
+                <label class="col-sm-3 control-label my_control_label">姓名</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control form_control" maxlength="10" id="name" v-model="UserInfo.userName">
+                  <label for="name"><input type="text" class="form-control form_control" maxlength="10" id="name" v-model="UserInfo.userName"></label>
                 </div>
               </div>
               <!--邮箱-->
               <div class="form-group form_group">
-                <label for="sex" class="col-sm-3 control-label my_control_label">邮箱</label>
+                <label class="col-sm-3 control-label my_control_label">邮箱</label>
                 <div class="col-sm-9">
-                  <input type="email" class="form-control form_control"  maxlength="30" id="mail" v-model="UserInfo.userEmail">
+                  <label for="mail"><input type="email" class="form-control form_control" maxlength="50" id="mail" v-model="UserInfo.userEmail"></label>
                 </div>
               </div>
               <!--民族-->
               <div class="form-group form_group">
-                <label for="lastname" class="col-sm-3 control-label my_control_label">民族</label>
+                <label class="col-sm-3 control-label my_control_label">民族</label>
                 <div class="col-sm-9">
-                  <select class="form-control form_control" v-model="UserInfo.userEthnicityAid">
-                    <option v-for="item in EnthnicityList" :value="item.ethnicityAid">{{item.ethnicityName}}</option>
-                  </select>
+                  <label>
+                    <select class="form-control form_control" v-model="UserInfo.userEthnicityAid">
+                      <option v-for="item in EnthnicityList" :value="item.ethnicityAid">{{item.ethnicityName}}</option>
+                    </select>
+                  </label>
                 </div>
               </div>
               <!--地域-->
               <div class="form-group form_group">
-                <label for="lastname" class="col-sm-3 control-label my_control_label">地域</label>
+                <label class="col-sm-3 control-label my_control_label">地域</label>
                   <div class="col-sm-3 col_sm_3_left">
-                    <select v-model="UserInfo.userProvinceRegionAid" class="form-control" >
-                      <option v-for="item in RegionList" :value="item.regionAid">{{item.regionName}}</option>
-                    </select>
+                    <label>
+                      <select v-model="UserInfo.userProvinceRegionAid" class="form-control" >
+                        <option v-for="item in RegionList" :value="item.regionAid">{{item.regionName}}</option>
+                      </select>
+                    </label>
                   </div>
                   <div class="col-sm-3 col_sm_3">
-                    <select v-model="UserInfo.userCityRegionAid" class="form-control">
-                      <option v-for="item in CityList" :value="item.regionAid">{{item.regionName}}</option>
-                    </select>
+                    <label>
+                      <select v-model="UserInfo.userCityRegionAid" class="form-control">
+                        <option v-for="item in CityList" :value="item.regionAid">{{item.regionName}}</option>
+                      </select>
+                    </label>
                   </div>
                   <div class="col-sm-3 col_sm_3_right">
-                    <select v-model="UserInfo.userAreaRegionAid" class="form-control">
-                      <option v-for="item in AreaList" :value="item.regionAid">{{item.regionName}}</option>
-                    </select>
+                    <label>
+                      <select v-model="UserInfo.userAreaRegionAid" class="form-control">
+                        <option v-for="item in AreaList" :value="item.regionAid">{{item.regionName}}</option>
+                      </select>
+                    </label>
                   </div>
-                <!--</div>-->
               </div>
               <!--组织-->
               <div class="form-group form_group">
-                <label for="lastname" class="col-sm-3 control-label my_control_label">所属单位</label>
+                <label class="col-sm-3 control-label my_control_label">所属单位</label>
                 <div class="col-sm-9">
                   <select class="form-control form_control" v-model="UserInfo.userOrganizationAid">
                     <option v-for="item in OrganizationList" :value="item.organizationAid">{{item.organizationName}}</option>
@@ -139,7 +148,7 @@
               </div>
               <!--单位证明-->
               <div class="form-group form_group">
-                <label for="lastname" class="col-sm-3 control-label my_control_label">单位证明</label>
+                <label class="col-sm-3 control-label my_control_label">单位证明</label>
                 <div class="col-sm-9">
                   <div id="accident">
                     <div class="hello">
@@ -149,9 +158,9 @@
                             <div class="edit">
                               <div class="avatar">
                                 <div class="img">
-                                  <img :src="avatar" height="150" width="300" @click="setAvatarOrgan">
+                                  <img :src="UserInfo.userOrganizationFileUrl" height="150" width="300" @click="setAvatarOrgan">
                                 </div>
-                                <input type="file" name="avatar" accept="image/gif,image/jpeg,image/jpg,image/png" style="display:none" @change="changeImage($event, '1')" ref="avatarInputOrgan">
+                                <input type="file" name="avatar" accept="image/gif,image/jpeg,image/jpg,image/png" style="display:none" @change="changeImage($event, 1)" ref="avatarInputOrgan">
                               </div>
                             </div>
                           </div>
@@ -180,7 +189,6 @@
   import Vue from 'vue';
   import * as axios from "axios";
   import util from '../components/util';
-
 
   export default {
     name: "BaseInfo",
@@ -215,27 +223,6 @@
     },
     methods:{
 
-      // 输入校验
-      checkForm: function (e) {
-        if (this.name && this.age && this.UserInfo.userId.length == '19') {
-          return true;
-        }
-
-        this.errors = [];
-
-        if (!this.UserInfo.userName) {
-          this.errors.push('请输入正确的姓名格式');
-        }
-        if (!this.UserInfo.userEmail) {
-          this.errors.push('请输入正确的邮箱');
-        }
-        if (!this.UserInfo.userId.length == '19') {
-          this.errors.push('请输入正确的身份证号');
-        }
-
-        e.preventDefault();
-      },
-
       // 选择照片
       setAvatarPhoto() {
         this.$refs.avatarInputPhoto.click()
@@ -246,64 +233,57 @@
       // 选择照片
 
       changeImage(e, id) {
-        if(id == '0'){
+        if(id === 0){
           // 上传用户照片
-          var file = e.target.files[0]
-          var reader = new FileReader()
-          var that = this
-          console.log(file)
-          reader.readAsDataURL(file)
+          let file = e.target.files[0];
+          let reader = new FileReader();
+          let that = this;
+          console.log(file);
+          reader.readAsDataURL(file);
           reader.onload = function(e) {
-            that.avatar2 = this.result
-          }
+            that.UserInfo.userPhotoFileUrl = this.result
+          };
           if (this.$refs.avatarInputPhoto.files.length !== 0) {
-            var image2 = new FormData()
-            image2.append('userPhotoFile', this.$refs.avatarInputPhoto.files[0])
+            var image2 = new FormData();
+            image2.append('userPhotoFile', this.$refs.avatarInputPhoto.files[0]);
             this.getImages(image2, id)
           }
         }else {
           // // 上传组织照片
-          var file = e.target.files[0]
-          var reader = new FileReader()
-          var that = this
-          reader.readAsDataURL(file)
+          var file = e.target.files[0];
+          var reader = new FileReader();
+          var that = this;
+          reader.readAsDataURL(file);
           reader.onload = function(e) {
-            that.avatar = this.result
-          }
+            that.UserInfo.userOrganizationFileUrl = this.result
+          };
           if (this.$refs.avatarInputOrgan.files.length !== 0) {
-            var image = new FormData()
-            image.append('userOrganizationFile', this.$refs.avatarInputOrgan.files[0])
+            var image = new FormData();
+            image.append('userOrganizationFile', this.$refs.avatarInputOrgan.files[0]);
             this.getImages(image, id)
           }
         }
-
       },
 
       // 上传照片
       getImages: function (e,id) {
         const that = this;
-        if(id == '0'){
+        if(id === 0){
           // 上传用户照片
           that.VuefileUpload(that.GLOBALS.BASEINFO_UPLOADUSERPHOTO,e,function(res){
-            // console.log(res)
             that.UserInfo.userPhotoFileCode = res.data.userPhotoCode
           },function (res) {console.log(res.message)});
         }else {
           // 上传组织照片
+          console.log(e);
           that.VuefileUpload(that.GLOBALS.BASEINFO_UPLOADUSERORGANIZATION,e,function(res){
             that.UserInfo.userOrganizationFileCode = res.data.userOrganizationCode
           },function (res) {console.log(res.message)});
         }
-
-
       },
 
       ChangeSex: function(e){
-        if(e == '0'){
-          this.UserInfo.userSex = true
-        }else {
-          this.UserInfo.userSex = false
-        }
+        this.UserInfo.userSex = e === 0;
       },
 
       fileClick() {
@@ -320,7 +300,7 @@
         // console.log(this.imgInfo)
         this.size = this.size + file.size;
         //判断是否为图片文件
-        if (file.type.indexOf('image') == -1) {
+        if (file.type.indexOf('image') === -1) {
           file.src = 'wenjian.png';
 
         } else {
@@ -329,8 +309,8 @@
           reader.readAsDataURL(file);
           reader.onload = function () {
             file.src = this.result;
-            this.imgInfo = file
-            console.log(this.imgInfo.name)
+            this.imgInfo = file;
+            console.log(this.imgInfo.name);
             // console.log(this.imgInfo.src)
             that.getImages(this.imgInfo.src);
           }
@@ -342,7 +322,7 @@
         const that = this;
         var ResquestInfo = new URLSearchParams();
         that.VuegetResquest(that.GLOBALS.BASEINFO_GETUSERINFO,ResquestInfo,function(res){
-          console.log(res.data)
+          console.log(res.data);
           that.UserInfo = res.data
         },function (res) {console.log(res.message)});
       },
@@ -373,17 +353,17 @@
         ResquestInfo.append("regionLevelId", id);
         that.VuegetResquest(that.GLOBALS.BASEINFO_GETREGIONLIST,ResquestInfo,function(res){
           // console.log(res.data)
-          if(id == '0'){
+          if(id === '0'){
             that.RegionList = res.data
-          }else if (id == '1'){
-            that.CityList = res.data,
+          }else if (id === '1'){
+            that.CityList = res.data;
             that.UserInfo.userCityRegionAid = res.data[0].regionAid
           }else {
-            that.AreaList = res.data,
+            that.AreaList = res.data;
             that.UserInfo.userAreaRegionAid = res.data[0].regionAid
           }
 
-        },function (res) {console.log(res.message)});
+        },function (res) {console.log('地域获取'+ res.message)});
       },
 
       // 单位列表
@@ -404,20 +384,20 @@
       // 修改基本信息
       setBaseInfo: function (e) {
         const that = this;
-        var RequestUserInfos = {
-          userId: that.UserInfo.userId,                                   //	  身份证号
-          userName: that.UserInfo.userName,                               //	  姓名
-          userSex: that.UserInfo.userSex,                                 //	  性别
-          userEmail: that.UserInfo.userEmail,                             //		邮箱
-          userNationAid: that.UserInfo.userNationAid,                    //		国籍aid
-          userEthnicityAid: that.UserInfo.userEthnicityAid,             //		民族aid
-          regionAid: that.UserInfo.userId,                                 //	地域aid
-          userAddress: that.UserInfo.userAddress,                         //	详细地址
-          userOrganizationAid	: that.UserInfo.userOrganizationAid,      //		组织aid
-          userPhotoFileCode: that.UserInfo.userPhotoFileCode,                          //	大头照码
-          userOrganizationFileCode	: that.UserInfo.userOrganizationFileCode,          //	 组织文件码
-        }
-        console.log(RequestUserInfos)
+        // var RequestUserInfos = {
+        //   userId: that.UserInfo.userId,                                   //	  身份证号
+        //   userName: that.UserInfo.userName,                               //	  姓名
+        //   userSex: that.UserInfo.userSex,                                 //	  性别
+        //   userEmail: that.UserInfo.userEmail,                             //		邮箱
+        //   userNationAid: that.UserInfo.userNationAid,                    //		国籍aid
+        //   userEthnicityAid: that.UserInfo.userEthnicityAid,             //		民族aid
+        //   regionAid: that.UserInfo.userId,                                 //	地域aid
+        //   userAddress: that.UserInfo.userAddress,                         //	详细地址
+        //   userOrganizationAid	: that.UserInfo.userOrganizationAid,      //		组织aid
+        //   userPhotoFileCode: that.UserInfo.userPhotoFileCode,                          //	大头照码
+        //   userOrganizationFileCode	: that.UserInfo.userOrganizationFileCode,          //	 组织文件码
+        // };
+        // console.log(RequestUserInfos);
 
         var ResquestInfo = new URLSearchParams();
         ResquestInfo.append("userId",that.UserInfo.userId);
@@ -431,20 +411,22 @@
         ResquestInfo.append("userOrganizationAid",that.UserInfo.userOrganizationAid);
         ResquestInfo.append("userPhotoFileCode",that.UserInfo.userPhotoFileCode);
         ResquestInfo.append("userOrganizationFileCode",that.UserInfo.userOrganizationFileCode);
-        console.log(this.checkForm)
+        console.log('123456');
+        console.log(that.UserInfo.userAddress);
         if(!that.checkCard(that.UserInfo.userId)){
-          alert('请输入正确的18位身份证号')
-        }else if (that.UserInfo.userAddress.length == 0){
-          alert('请输入详细地址')
+          this.$Message.warning('请输入正确的18位身份证号');
+        }else if (that.UserInfo.userAddress === null){
+          this.$Message.warning('请输入详细地址');
         }else if(!that.checkEmail(that.UserInfo.userEmail)){
-          alert('请输入正确的邮箱地址')
+          this.$Message.warning('请输入正确的邮箱地址');
         }else if(!that.checkName(that.UserInfo.userName)){
-          alert('请输入正确的姓名')
+          this.$Message.warning('请输入正确的姓名');
         }else {
+          console.log('123456');
           that.VuegetResquest(that.GLOBALS.BASEINFO_SETUSERINFO,ResquestInfo,function(res){
-            console.log(res)
-            alert('保存成功')
-          },function (res) {alert(res.message)});
+            console.log(res);
+            that.$Message.success('保存成功');
+          },function (res) {that.$Message.warning(res.message)})
         }
       },
     },
@@ -452,7 +434,6 @@
     created: function () {
       const that = this;
       that.getBaseInfo();
-
       that.getNationList();
       that.getRegionList('-1','0');
       that.getEnthnicityList();
@@ -478,15 +459,16 @@
         this.getRegionList(newName,'2');
       },
       imgInfos(newName, oldName) {
-        this.imgInfo = newName
+        this.imgInfo = newName;
         console.log(this.imgInfo)
       },
     }
   }
-
 </script>
 
 <style scoped>
+  label {
+    display: inline;}
   .popover-title {
     display: none;
   }
@@ -498,17 +480,17 @@
     height: 533px;
   }
   .col_sm_3_left {
-    padding-right: 0px;
+    padding-right: 0;
   }
   .col_sm_3 {
-    padding-right: 0px;
-    padding-left: 2px;
+    padding-right: 0;
+    /*padding-left: 2px;*/
   }
   .col_sm_3_right {
     padding-left: 2px;
   }
   .col-6 > div {
-    border: 0px;
+    border: 0;
   }
   .table {
     font-size: 16px;
@@ -565,7 +547,7 @@
     text-align: right;
     font-size: 16px;
     /*max-width: 30%;*/
-    padding-top: 0px;
+    padding-top: 0;
     line-height: 40px;
   }
   .my_control_label div {
@@ -641,7 +623,7 @@
     height: 100px;
     width: 120px;
     border: 1px solid #ccc;
-    margin: 0px 30px 10px 0px;
+    margin: 0 30px 10px 0;
     float: left;
     line-height: 100px;
     display: table-cell;
@@ -698,7 +680,7 @@
     border: 1px solid #ccc;
     background-color: #fff;
     /*width: 650px;*/
-    box-shadow: 0px 1px 0px #ccc;
+    box-shadow: 0 1px 0 #ccc;
     border-radius: 4px;
   }
 

@@ -17,17 +17,18 @@
           <td>{{item.emount}}</td>
           <td>{{item.time}}</td>
           <td>{{item.state}}</td>
-          <td data-toggle="modal" data-target="#CertLsit" @click="getCertInfo(item.courseCertUserAid)">详情</td>
+          <td data-toggle="modal" data-target="#CertInfoModal" @click="getCertInfo(item.courseCertUserAid)">详情</td>
         </tr>
         </tbody>
       </table>
     </div>
-    <CertListModal :CertInfo="CertInfo"></CertListModal>
+    <CertInfoModal :CertInfo="CertInfo"></CertInfoModal>
   </div>
 </template>
 
 <script>
-  import CertListModal from '../components/CertListModal';
+  import CertInfoModal from '../components/CertInfoModal';
+  
 
   props:['idCode']
   export default {
@@ -44,32 +45,33 @@
       // 证书列表
       getCertList: function () {
         const that = this;
-        var ResquestInfo = new URLSearchParams();
+        const ResquestInfo = new URLSearchParams();
         ResquestInfo.append("idCode",that.$route.params.idCode);
         that.VuegetResquest(that.GLOBALS.CERTLIST_CERTLIST,ResquestInfo,function(res){
           // console.log(res.data)
-          that.CertList = res.data
+          that.CertList = res.data;
         },function (res) {console.log(res.message)});
       },
 
       // 证书详情
       getCertInfo: function (e) {
         const that = this;
-        var ResquestInfo = new URLSearchParams();
+        const ResquestInfo = new URLSearchParams();
         ResquestInfo.append("courseCertUserAid",'1');
         that.VuegetResquest(that.GLOBALS.MYCERT_CERTINFO,ResquestInfo,function(res){
-          console.log(res.data)
+          console.log(res.data);
           that.CertInfo = res.data
         },function (res) {console.log(res.message)});
       },
     },
 
     components:{
-      CertListModal
+      CertInfoModal
     },
 
     created: function () {
-      var that = this
+      const that = this;
+      console.log(that.$route.params.idCode);
       that.getCertList();
     }
   }

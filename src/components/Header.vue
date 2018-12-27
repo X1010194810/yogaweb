@@ -37,7 +37,7 @@
           </FormItem>
           <FormItem label="短信验证码" prop="MCode">
             <Input class="ivu-inputs" v-model="resquesInfo.messageCode" placeholder="请输入短信验证码"></Input>
-            <Button type="success" @click="getRegisterCode()" disabled="IsSend">{{value}}</Button>
+            <Button type="success" @click="getRegisterCode()" :disabled="IsSend">{{value}}</Button>
           </FormItem>
           <!--<FormItem>-->
             <!--<Button type="primary" @click="handleSubmit('formCustom')">Submit</Button>-->
@@ -46,7 +46,7 @@
         </Form>
       </Modal>
 
-      <LoginModal  :resquesInfo="resquesInfo" :imageData="imageData" :SubmitLogin="SubmitLogin" :getImageData="getImageData" :getRegisterCode="getRegisterCode"  :SubmitRegister="SubmitRegister" :value="value"></LoginModal>
+      <LoginModal  :resquesInfo="resquesInfo" :imageData="imageData" :SubmitLogin="SubmitLogin" :getImageData="getImageData" :showRegister="showRegister" :getRegisterCode="getRegisterCode"  :SubmitRegister="SubmitRegister" :value="value"></LoginModal>
     </header>
 </template>
 
@@ -122,14 +122,16 @@
 
           Index: false,
           IsSend: false,
+          time: 0,
+
           userName: '',
           idCode: '',
           value: '获取验证码',
           imageData: ['0', '1'],
           resquesInfo: {
-            userName: '18487147902',
-            loginKey: '123456',
-            loginKey2: '123456',
+            userName: '',
+            loginKey: '',
+            loginKey2: '',
             imageCode: '',
             imageKey: '',
             messageCode: '',
@@ -200,16 +202,31 @@
         // 获取注册短信验证码
         getRegisterCode: function () {
           const that = this;
-          console.log(that.resquesInfo.userName);
           var ResquestInfo = new URLSearchParams();
           ResquestInfo.append("phone",that.resquesInfo.userName);
           ResquestInfo.append("imageCode", that.resquesInfo.imageCode );
           ResquestInfo.append("imageKey",that.resquesInfo.imageKey);
           that.VuegetResquest(that.GLOBALS.LOGIN_USERREGISTERSENDMESSAGE,ResquestInfo,function(res){
-            // this.$Message.success('获取成功');
-            console.log('获取成功');
-            that.value = "已发送"
-          },function (res) {this.$Message.warning('请输入正确的手机号和验证码'); });
+            that.$Message.success('获取成功');
+
+            that.run();
+            that.IsSend = true;
+          },function (res) {that.$Message.warning('请输入正确的手机号和验证码'); });
+        },
+        run: function() {
+          this.time = 60;
+          this.timer();
+        },
+        stop: function(){
+          this.time = 0;
+          this.IsSend = false;
+        },
+        timer: function() {
+          if (this.time > 0) {
+            this.time--;
+            this.value = "已发送(" + this.time + ')';
+            setTimeout(this.timer, 1000);
+          }
         },
 
         // 登录
@@ -221,8 +238,9 @@
           ResquestInfo.append("imageCode",e);
           ResquestInfo.append("imageKey",that.resquesInfo.imageKey);
           that.VuegetResquest(that.GLOBALS.LOGIN_USERLOGIN,ResquestInfo,function(res){
-            // console.log(res)
+            console.log(res);
             if (res.code === 10000) {
+              console.log(res);
               window.location.reload();
               window.localStorage.setItem('Token', res.data.token);
               window.localStorage.setItem('userName', res.data.userName);
@@ -232,7 +250,7 @@
               })
             }
           },function (res) {
-            this.$Message.error(res.message);
+            that.$Message.error(res.message);
             // alert(res.message);
             that.getImageData();
             // console.log(res.message)
@@ -250,24 +268,21 @@
           }, 100);
 
           const that = this;
-          console.log('注册成功');
-          console.log(that.resquesInfo);
           var ResquestInfo = new URLSearchParams();
           ResquestInfo.append("phone", that.resquesInfo.userName);
           ResquestInfo.append("loginKey", that.resquesInfo.loginKey);
           ResquestInfo.append("phoneCode", e);
 
             that.VuegetResquest(that.GLOBALS.LOGIN_USERREGISTER, ResquestInfo, function (res) {
-              this.$Message.success(res);
-              console.log(res);
+              that.$Message.success(res);
               if (res.code === 10000) {
                 $('#ModalLogin').popover('hide');
                 $('#ModalRegister').popover('hide');
               }
             }, function (res) {
-              console.log(res)
+              that.$Message.warning(res.message);
             });
-            that.value = '获取验证码'
+            // that.value = '获取验证码'
         },
 
         // 注销

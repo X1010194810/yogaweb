@@ -5,10 +5,10 @@
         <div  class="panel panel-default">
           <div class="panel-body my-panel-body">
             <div class="my-panel-body-title">
-              <div><router-link to="/BaseInfo"><img src="../assets/img/u230.png" height="40" width="40"/>基本信息</router-link></div>
-              <div><router-link to="/MyEnroll"><img src="../assets/img/u232.png" height="40" width="40"/>我的报名</router-link></div>
-              <div><router-link to="/MyCert"><img src="../assets/img/u234.png" height="40" width="40"/>我的证书</router-link></div>
-              <div><router-link to="/SafeCenter"><img src="../assets/img/u236.png" height="40" width="40"/>安全中心</router-link></div>
+              <div @click="ChangeTile('0')"><router-link to="/BaseInfo" v-bind:style="{'color' : Index === '0' ? '#0e90d2':'#383838'}"><img src="../assets/img/u230.png" height="40" width="40"/>基本信息</router-link></div>
+              <div @click="ChangeTile('1')"><router-link to="/MyEnroll" v-bind:style="{'color' : Index === '1'  ? '#0e90d2':'#383838'}"><img src="../assets/img/u232.png" height="40" width="40"/>我的报名</router-link></div>
+              <div @click="ChangeTile('2')"><router-link to="/MyCert" v-bind:style="{'color' : Index === '2'  ? '#0e90d2':'#383838'}"><img src="../assets/img/u234.png" height="40" width="40"/>我的证书</router-link></div>
+              <div @click="ChangeTile('3')"><router-link to="/SafeCenter" v-bind:style="{'color' : Index === '3'  ? '#0e90d2':'#383838'}"><img src="../assets/img/u236.png" height="40" width="40"/>安全中心</router-link></div>
             </div>
           </div>
         </div>
@@ -31,23 +31,37 @@
 
     data: function () {
       return{
-
+        Index: 0,
       }
     },
     methods:{
-
+      ChangeTile: function (e) {
+        this.Index = e;
+        sessionStorage.setItem("Index", e); //添加到sessionStorage
+      }
     },
 
     created: function () {
+      this.Index=sessionStorage.getItem('Index');
+    },
+    destroyed: function () {
+      sessionStorage.setItem("Index", 0); //添加到sessionStorage
+    },
 
-    }
   }
 </script>
 
 <style scoped>
+  .info {
+    background-color: #fff;
+    border-radius: 4px;
+    margin-top: 4px;
+    color: #0e90d2;
+  }
 
   .col-right {
     border: 1px solid #ccc;
+    padding: 0;
   }
   .col-6 {
     padding: 0;
@@ -55,7 +69,7 @@
   }
 
   .col-6 > div {
-    border: 0px;
+    border: 0;
   }
   .table {
     font-size: 16px;
@@ -109,7 +123,7 @@
     text-align: right;
     font-size: 16px;
     /*max-width: 30%;*/
-    padding-top: 0px;
+    padding-top: 0;
     line-height: 40px;
   }
   .my_control_label div {

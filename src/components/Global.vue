@@ -3,6 +3,7 @@
 </template>
 
 <script>
+  //const HTTP_URL = "http://192.168.1.4:8787/";
   // const HTTP_URL = "http://49.4.78.104:8787/";
   const HTTP_URL = "http://120.79.46.224:8787/";
 

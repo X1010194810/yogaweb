@@ -26,6 +26,7 @@
           <div class="panel-body my-panel-body">
             <div class="my-panel-body-title">
               <div>招生学院</div>
+
             </div>
             <div class="my-panel-body-list">
               <!--招生学院-->
@@ -93,10 +94,10 @@
     "/home": "Home",
     data: function () {
       return{
-        NoticList: [],          // 学院公告
-        CollegeList:[
+        value: [20, 50],
 
-        ],        // 招生学院
+        NoticList: [],          // 学院公告
+        CollegeList:[],        // 招生学院
         CollegeInfo: '',       // 学院简介
       }
     },

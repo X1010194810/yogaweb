@@ -26,8 +26,7 @@
 
     data: function () {
       return{
-        // 公告简介
-        CollegeNotic: {}
+        CollegeNotic: {}  // 公告简介
       }
     },
 
@@ -36,23 +35,21 @@
       // 文章详情
       getArticleInfo: function () {
         var that = this;
-        var apiUrl = that.GLOBALS.ARTICLEINFO_ARTICLEINFO
+        var apiUrl = that.GLOBALS.ARTICLEINFO_ARTICLEINFO;
         $.post(apiUrl,{articleAid: that.$route.params.aid},{emulateJSON:true}).then(function(res){
-          console.log(res.data)
-          if (res.code == '10000') {
+          if (res.code === 10000) {
+            console.log(res.data);
             that.CollegeNotic = res.data
           }
         }, function (res) {
         });
       },
 
+      // 返回上一层
       BackState: function () {
-
         var that = this;
-        this.$router.go(-1);//返回上一层
-
+        this.$router.go(-1);
       },
-
     },
 
     created: function () {

@@ -16,7 +16,7 @@ import SafeCenter from '@/page/SafeCenter'
 // import CertList from '@/page/CertList'
 
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [

@@ -1,26 +1,6 @@
 <template id="CollegeInfo">
   <div>
     <div class="row">
-      <div class="col-md-6 col-left">
-        <div  class="panel panel-default">
-          <div class="panel-body my-panel-body">
-            <div class="my-panel-body-title" @click="getEnrollList()">
-              {{$route.query.collegeName}}招生列表
-            </div>
-            <div class="my-panel-body-list">
-              <!--郑州分院招生列表-->
-              <div>
-                <ul class="list-group my_list">
-                  <li class="my_list_item" v-for="item in AdmissionsList">
-                    <a >{{item.courseEnrollFee}}</a><a>{{item.courseEnrollName}}</a>
-                    <a class="my_list_info"><a href="CollegeInfo.vue" @click="getCourseEnrollInfo(item.courseEnrollAid)" data-toggle="modal" data-target="#myModal3">详情</a><a>|</a><a @click="SignUp()">立即报名</a></a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="col-md-6 col-right">
         <div  class="panel panel-default">
           <div class="panel-body my-panel-body">
@@ -33,6 +13,26 @@
                 <ul class="list-group my_list">
                   <li class="my_list_item" @click="bindListArticle(item.articleAid)" v-for="item in CollegeNoticList">
                     <a >{{item.articleTitle}}</a><a>{{item.articleCreateTime}}</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-left">
+        <div  class="panel panel-default">
+          <div class="panel-body my-panel-body">
+            <div class="my-panel-body-title" @click="getEnrollList()">
+              {{$route.query.collegeName}}招生列表
+            </div>
+            <div class="my-panel-body-list">
+              <!--郑州分院招生列表-->
+              <div>
+                <ul class="list-group my_list">
+                  <li class="my_list_item" v-for="item in AdmissionsList">
+                    <a >{{item.courseEnrollFee}}</a><a>{{item.courseEnrollName}}</a>
+                    <a class="my_list_info"><a @click="getCourseEnrollInfo(item.courseEnrollAid)" data-toggle="modal" data-target="#EnrollModal">详情</a><a>|</a><a @click="getCourseEnrollUser(item.courseEnrollAid)">立即报名</a></a>
                   </li>
                 </ul>
               </div>
@@ -81,15 +81,7 @@
     </div>
 
     <!--弹窗-->
-    <div class="modal" id="myModal3" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog" style=" max-width: 900px;">
-        <div class="modal-body">
-          <!--<ModalPopupEnrollInfo v-bind:CourseEnrollInfo="CourseEnrollInfo"></ModalPopupEnrollInfo>-->
-
-        </div>
-      </div>
-    </div>
-
+    <EnrollModal :EnrollInfo="EnrollInfo" :getCourseEnrollUser="getCourseEnrollUser" :aid="aid" ></EnrollModal>
   </div>
 
 </template>
@@ -98,6 +90,7 @@
   import Global from '../components/Global';
   import Vue from 'vue'
   Vue.prototype.GLOBALS = Global;
+  import EnrollModal from '../components/EnrollModal';
 
   export default {
     name: "CollegeInfo",
@@ -105,7 +98,11 @@
 
     data: function () {
       return{
+
+      // },
+
         counter: 0,
+        EnrollInfo: '',
         CollegeInfo: {
           name: '河南分院'
         },
@@ -113,6 +110,7 @@
         AdmissionsList: [],        // 分院报名列表
 
         // 获取报名详情
+        aid: '1',
         CourseEnrollInfo: {
           courseEnrollAid: 17,
           courseEnrollPriceGroupAid: 1,
@@ -131,13 +129,14 @@
 
     methods: {
 
+
       // 获取分院招生报名列表
       getCourseEnrollList: function () {
         const that = this;
-        var ResquestInfo = new URLSearchParams();
+        const ResquestInfo = new URLSearchParams();
         ResquestInfo.append("departmentAid",that.$route.query.aid);
         that.VuegetResquest(that.GLOBALS.COLLEGEINFO_COURSEENROLL_LIST,ResquestInfo,function(res){
-          console.log(res.data)
+          // console.log(res.data);
           that.AdmissionsList = res.data
         },function (res) {console.log(res.message)});
       },
@@ -145,51 +144,43 @@
       // 获取报名详情
       getCourseEnrollInfo: function (e) {
         const that = this;
-        var ResquestInfo = new URLSearchParams();
+        that.aid = e;
+        const ResquestInfo = new URLSearchParams();
         ResquestInfo.append("courseEnrollAid", e);
         that.VuegetResquest(that.GLOBALS.COLLEGEINFO_COURSEENROLL_INFO,ResquestInfo,function(res){
-          that.CourseEnrollInfo = res.data
-        },function (res) {console.log(res.message)});
+          // console.log(res);
+          that.EnrollInfo = res.data
+        },function (res) {that.$Message.warning(res.message)});
       },
 
       // 获取分院公告列表
       getArticleList: function (e) {
         const that = this;
-        var ResquestInfo = new URLSearchParams();
+        const ResquestInfo = new URLSearchParams();
         ResquestInfo.append("departmentAid",that.$route.query.aid);
         that.VuegetResquest(that.GLOBALS.COLLEGEINFO_ARTICLE_LIST,ResquestInfo,function(res){
           that.CollegeNoticList = res.data
-        },function (res) {console.log(res.message)});
-
-
+        },function (res) {that.$Message.warning(res.message)});
       },
 
       // 获取分院详情
       getCollegeInfo: function () {
         const that = this;
-        const apiUrl = that.GLOBALS.COLLEGEINFO_COLLEGEINFO;
-        $.post(apiUrl,{departmentAid: that.$route.query.aid},{emulateJSON:true}).then(function(res){
-          if (res.code == '10000') {
-            that.CollegeNotic = res.data
-          }
-        }, function (res) {
-        });
+        const ResquestInfo = new URLSearchParams();
+        ResquestInfo.append("departmentAid",that.$route.query.aid);
+        that.VuegetResquest(that.GLOBALS.COLLEGEINFO_COLLEGEINFO,ResquestInfo,function(res){
+          that.CollegeNotic = res.data
+        },function (res) {that.$Message.warning(res.message)});
       },
 
       // 用户报名
-      getCourseEnrollUser: function () {
-        var that = this;
-        const apiUrl = that.GLOBALS.COLLEGEINFO_COURSEENROLLUSER;
-        $.post(apiUrl,{},{emulateJSON:true}).then(function(res){
-          if (res.code == '10000') {
-            that.SchoolIntroduce = res.data
-            that.Contact[0].title = "咨询电话："
-            that.Contact[0].date = that.SchoolIntroduce.departmentPhone;
-            that.Contact[1].title = "详细地址："
-            that.Contact[1].date = that.SchoolIntroduce.departmentAddress;
-          }
-        }, function (res) {
-        });
+      getCourseEnrollUser: function (e) {
+        const that = this;
+        const ResquestInfo = new URLSearchParams();
+        ResquestInfo.append("courseEnrollAid",e);
+        that.VuegetResquest(that.GLOBALS.COLLEGEINFO_COURSEENROLLUSER,ResquestInfo,function(res){
+          that.$Message.success('报名成功');
+        },function (res) {that.$Message.warning(res.message)});
       },
 
       // 跳转公告详情
@@ -203,21 +194,16 @@
           },
         })
       },
-
-      SignUp: function () {
-        alert('报名成功')
-      }
     },
 
     components:{
-      // ModalPopupEnrollInfo
+      EnrollModal
     },
 
     // 项目初始化
     created: function(){
-      console.log(this.$route.query.collegeName)
-      this.getCourseEnrollList()   // 获取分院报名列表
-      this.getArticleList()        // 获取分院公告
+      this.getCourseEnrollList();   // 获取分院报名列表
+      this.getArticleList() ;       // 获取分院公告
       this.getCollegeInfo()        // 获取分院详情
     },
   }
@@ -225,8 +211,9 @@
 
 <style scoped>
   .modal {
-    margin-top: 10%;
+    margin-top: 7%;
   }
+
   .panel-default {
     height: 290px;
     border-color: #d7d7d7;
