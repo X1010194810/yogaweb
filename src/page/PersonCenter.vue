@@ -71,6 +71,7 @@
   .col-6 > div {
     border: 0;
   }
+
   .table {
     font-size: 16px;
   }
