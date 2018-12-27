@@ -69,7 +69,7 @@
               </Select>
             </label>
 
-          </FormItem>
+          </FormItem>  
           <FormItem label="地域">
             <div class="col-sm-4 col_sm_3_left">
               <label>
