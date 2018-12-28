@@ -92,7 +92,6 @@
               <Option v-for="item in OrganizationList" :value="item.organizationAid">{{item.organizationName}}</Option>
             </Select>
           </FormItem>
-
           <FormItem label="单位证明" prop="desc">
             <div class="upload">
             <div class="admin">
