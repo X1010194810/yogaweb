@@ -123,7 +123,6 @@
   import Vue from 'vue';
   import * as axios from "axios";
   import util from '../components/util';
-
   export default {
     name: "BaseInfo",
 
