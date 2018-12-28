@@ -122,7 +122,6 @@
 </template>
 
 
-
 <script>
   import Vue from 'vue';
   import * as axios from "axios";
