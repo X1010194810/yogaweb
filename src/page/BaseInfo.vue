@@ -4,7 +4,7 @@
     <div class="col-md-12">
       <router-view></router-view>
 
-      <Form class="ivu-inputs" ref="UserInfo" :model="UserInfo" :rules="ruleValidate" :label-width="90" style="width: 100%">
+      <Form class="ivu-inputs" ref="UserInfo" :model="UserInfo" :rules="ruleCustom" :label-width="90" style="width: 100%">
         <div class="col-md-12">
         <div class="col-md-6">
           <FormItem label="手机号" prop="phone">
@@ -12,8 +12,8 @@
           </FormItem>
           <FormItem label="性别" >
             <RadioGroup v-model="UserInfo.userSex">
-              <Radio label="true">男</Radio>
-              <Radio label="false">女</Radio>
+              <Radio label="1">男</Radio>
+              <Radio label="0">女</Radio>
             </RadioGroup>
           </FormItem>
 
@@ -42,18 +42,12 @@
               </div>
             </div>
           </FormItem>
-          <!--<FormItem>-->
-            <!--<Button @click="handleReset('formValidate')" style="margin-left: 8px">Reset</Button>-->
-          <!--</FormItem>-->
           <div class="col-sm-offset-2 col-sm-10 col_button">
-          <button type="button" class="btn btn-default" @click="getBaseInfo()">取消</button>
+          <button type="button" class="btn btn-default" @click="handleReset(UserInfo)">取消</button>
           </div>
         </div>
-      <!--</Form>-->
 
-
-
-      <div class="col-md-6">
+        <div class="col-md-6">
         <!--<Form class="ivu-inputs" ref="UserInfo" :model="UserInfo" :rules="ruleValidate" :label-width="90">-->
           <FormItem label="姓名" prop="name">
             <Input v-model="UserInfo.userName" placeholder="请输入您的真实姓名"></Input>
@@ -69,7 +63,7 @@
               </Select>
             </label>
 
-          </FormItem>  
+          </FormItem>
           <FormItem label="地域">
             <div class="col-sm-4 col_sm_3_left">
               <label>
@@ -115,194 +109,14 @@
             </div>
             </div>
           </FormItem>
-          <div class="col-sm-offset-2 col-sm-10 col_button">
-            <button class="btn btn-info popover-show" @click="setBaseInfo('UserInfo')">保存</button>
-          </div>
-          <!--<FormItem>-->
-            <!--<Button @click="handleReset('formValidate')" style="margin-left: 8px">Reset</Button>-->
-          <!--</FormItem>-->
+          <FormItem>
+            <div class="col-sm-offset-2 col-sm-10 col_button">
+              <button  class="btn btn-info popover-show" @click="setBaseInfo('UserInfo')">保存</button>
+            </div>
+          </FormItem>
         </div>
         </div>
       </Form>
-
-
-
-      <!--<form class="form-horizontal" role="form" >-->
-        <!--<div>-->
-          <!--<div v-if="errors.length">-->
-            <!--<b>Please correct the following error(s):</b>-->
-            <!--<ul>-->
-              <!--<li v-for="error in errors">{{ error }}</li>-->
-            <!--</ul>-->
-          <!--</div>-->
-        <!--</div>-->
-        <!--<div class="col-md-6 col-6">-->
-          <!--<div  class="panel panel-default">-->
-            <!--<div class="panel-body my-panel-body">-->
-              <!--&lt;!&ndash;电话&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">手机号</label>-->
-                <!--<div class="col-sm-9">-->
-                  <!--<div class="phone">{{UserInfo.userPhone}}</div>-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--&lt;!&ndash;性别&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">性别</label>-->
-                <!--<div class="radio form_radio">-->
-                  <!--<label class="radio-inline radio_inline">-->
-                    <!--<input type="radio" name="optionsRadiosinline" id="optionsRadios3" @change="ChangeSex('0')" value="option1" :checked="UserInfo.userSex"> 男-->
-                  <!--</label>-->
-                  <!--<label class="radio-inline">-->
-                    <!--<input type="radio" name="optionsRadiosinline" id="optionsRadios4" @change="ChangeSex('1')" value="option2" :checked="!UserInfo.userSex"> 女-->
-                  <!--</label>-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--&lt;!&ndash;身份证号码&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">身份证号码</label>-->
-                <!--<div class="col-sm-9">-->
-                  <!--<label for="name"><input type="text" class="form-control form_control" maxlength="18" minlength="18" placeholder="请输入18位身份证号码" v-model="UserInfo.userId"></label>-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--&lt;!&ndash;国家&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">国家</label>-->
-                <!--<div class="col-sm-9">-->
-                  <!--<label>-->
-                    <!--<select class="form-control form_control" v-model="UserInfo.userNationAid">-->
-                      <!--<option v-for="item in NationList" :value="item.nationAid">{{item.nationName}}</option>-->
-                    <!--</select>-->
-                  <!--</label>-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--&lt;!&ndash;详细地址&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">详细地址</label>-->
-                <!--<div class="col-sm-9">-->
-                  <!--<label for="name"><input type="text" class="form-control form_control" minlength="4" maxlength="30" id="Info" v-model="UserInfo.userAddress" placeholder="请输入详细地址"></label>-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--&lt;!&ndash;正规照片&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">正规照片</label>-->
-                <!--<div class="col-sm-9">-->
-                  <!--<div class="upload">-->
-                  <!--<div class="edit">-->
-                    <!--<div class="avatar">-->
-                      <!--<div class="img">-->
-                        <!--<img :src="UserInfo.userPhotoFileUrl" height="150" width="300" @click="setAvatarPhoto">-->
-                      <!--</div>-->
-                      <!--<input type="file" name="avatar2" accept="image/gif,image/jpeg,image/jpg,image/png" style="display:none" @change="changeImage($event, 0)" ref="avatarInputPhoto">-->
-                    <!--</div>-->
-                  <!--</div>-->
-                  <!--</div>-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--<div class="form-group">-->
-                <!--<div class="col-sm-offset-2 col-sm-10 col_button">-->
-                  <!--<button type="button" class="btn btn-default" @click="getBaseInfo()">取消</button>-->
-                <!--</div>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</div>-->
-        <!--</div>-->
-
-        <!--<div class="col-md-6 col-6">-->
-          <!--<div  class="panel panel-default">-->
-            <!--<div class="panel-body my-panel-body">-->
-              <!--&lt;!&ndash;姓名&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">姓名</label>-->
-                <!--<div class="col-sm-9">-->
-                  <!--<label for="name"><input type="text" class="form-control form_control" maxlength="10" id="name" v-model="UserInfo.userName"></label>-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--&lt;!&ndash;邮箱&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">邮箱</label>-->
-                <!--<div class="col-sm-9">-->
-                  <!--<label for="mail"><input type="email" class="form-control form_control" maxlength="50" id="mail" v-model="UserInfo.userEmail"></label>-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--&lt;!&ndash;民族&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">民族</label>-->
-                <!--<div class="col-sm-9">-->
-                  <!--<label>-->
-                    <!--<select class="form-control form_control" v-model="UserInfo.userEthnicityAid">-->
-                      <!--<option v-for="item in EnthnicityList" :value="item.ethnicityAid">{{item.ethnicityName}}</option>-->
-                    <!--</select>-->
-                  <!--</label>-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--&lt;!&ndash;地域&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">地域</label>-->
-                  <!--<div class="col-sm-3 col_sm_3_left">-->
-                    <!--<label>-->
-                      <!--<select v-model="UserInfo.userProvinceRegionAid" class="form-control" >-->
-                        <!--<option v-for="item in RegionList" :value="item.regionAid">{{item.regionName}}</option>-->
-                      <!--</select>-->
-                    <!--</label>-->
-                  <!--</div>-->
-                  <!--<div class="col-sm-3 col_sm_3">-->
-                    <!--<label>-->
-                      <!--<select v-model="UserInfo.userCityRegionAid" class="form-control">-->
-                        <!--<option v-for="item in CityList" :value="item.regionAid">{{item.regionName}}</option>-->
-                      <!--</select>-->
-                    <!--</label>-->
-                  <!--</div>-->
-                  <!--<div class="col-sm-3 col_sm_3_right">-->
-                    <!--<label>-->
-                      <!--<select v-model="UserInfo.userAreaRegionAid" class="form-control">-->
-                        <!--<option v-for="item in AreaList" :value="item.regionAid">{{item.regionName}}</option>-->
-                      <!--</select>-->
-                    <!--</label>-->
-                  <!--</div>-->
-              <!--</div>-->
-              <!--&lt;!&ndash;组织&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">所属单位</label>-->
-                <!--<div class="col-sm-9">-->
-                  <!--<select class="form-control form_control" v-model="UserInfo.userOrganizationAid">-->
-                    <!--<option v-for="item in OrganizationList" :value="item.organizationAid">{{item.organizationName}}</option>-->
-                  <!--</select>-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--&lt;!&ndash;单位证明&ndash;&gt;-->
-              <!--<div class="form-group form_group">-->
-                <!--<label class="col-sm-3 control-label my_control_label">单位证明</label>-->
-                <!--<div class="col-sm-9">-->
-                  <!--<div id="accident">-->
-                    <!--<div class="hello">-->
-                      <!--<div class="upload">-->
-                        <!--<div class="admin">-->
-                          <!--<div class="admin-content">-->
-                            <!--<div class="edit">-->
-                              <!--<div class="avatar">-->
-                                <!--<div class="img">-->
-                                  <!--<img :src="UserInfo.userOrganizationFileUrl" height="150" width="300" @click="setAvatarOrgan">-->
-                                <!--</div>-->
-                                <!--<input type="file" name="avatar" accept="image/gif,image/jpeg,image/jpg,image/png" style="display:none" @change="changeImage($event, 1)" ref="avatarInputOrgan">-->
-                              <!--</div>-->
-                            <!--</div>-->
-                          <!--</div>-->
-                        <!--</div>-->
-                      <!--</div>-->
-                    <!--</div>-->
-                  <!--</div>-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--<div class="form-group">-->
-                <!--<div class="col-sm-offset-2 col-sm-10 col_button">-->
-                  <!--<button class="btn btn-info popover-show" @click="setBaseInfo()">保存</button>-->
-                <!--</div>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</form>-->
     </div>
   </div>
 </template>
@@ -322,41 +136,50 @@
       const validateCode = (rule, value, callback) => {
         if (!this.checkCard(this.UserInfo.userId)) {
           callback(new Error('请输入正确的18位身份证号'));
+        }else{
+          callback();
         }
       };
       // 详细地址验证
       const validateAddress = (rule, value, callback) => {
         if (this.UserInfo.userAddress === null || this.UserInfo.userAddress === '') {
           callback(new Error('请输入详细地址'));
+        }else{
+          callback();
         }
       };
       // 姓名验证
       const validateName = (rule, value, callback) => {
         if (!this.checkName(this.UserInfo.userName)) {
           callback(new Error('请输入真实姓名'));
+        }else{
+          callback();
         }
       };
       // 邮箱验证
       const validateMail = (rule, value, callback) => {
         if (!this.checkEmail(this.UserInfo.userEmail)) {
           callback(new Error('请输入真实邮箱地址'));
+        }else{
+          callback();
         }
       };
 
       return{
-        ruleValidate: {
+
+        ruleCustom: {
           code: [
-            {  required: true, validator: validateCode, trigger: 'blur' }
+            {required: true, validator: validateCode, trigger: 'blur'}
           ],
           info: [
-            { required: true, validator: validateAddress, trigger: 'blur' }
+            {required: true, validator: validateAddress, trigger: 'blur'}
           ],
 
           name: [
-            { required: true, validator: validateName, trigger: 'blur' }
+            {required: true, validator: validateName, trigger: 'blur'}
           ],
           mail: [
-            { required: true, validator: validateMail, trigger: 'blur' }
+            {required: true, validator: validateMail, trigger: 'blur'}
           ],
         },
 
@@ -499,7 +322,12 @@
         const that = this;
         var ResquestInfo = new URLSearchParams();
         that.VuegetResquest(that.GLOBALS.BASEINFO_GETUSERINFO,ResquestInfo,function(res){
-          // console.log(res.data);
+          that.UserInfo = res.data;
+          if(res.data.userSex){
+            that.UserInfo.userSex = '1'
+          }else {
+            that.UserInfo.userSex = '0'
+          }
           that.UserInfo = res.data
         },function (res) {console.log(res.message)});
       },
@@ -565,7 +393,7 @@
         var ResquestInfo = new URLSearchParams();
         ResquestInfo.append("userId",that.UserInfo.userId);
         ResquestInfo.append("userName",that.UserInfo.userName);
-        ResquestInfo.append("userSex",that.UserInfo.userSex);
+
         ResquestInfo.append("userEmail",that.UserInfo.userEmail);
         ResquestInfo.append("userNationAid",that.UserInfo.userNationAid);
         ResquestInfo.append("userEthnicityAid",that.UserInfo.userEthnicityAid);
@@ -574,31 +402,24 @@
         ResquestInfo.append("userOrganizationAid",that.UserInfo.userOrganizationAid);
         ResquestInfo.append("userPhotoFileCode",that.UserInfo.userPhotoFileCode);
         ResquestInfo.append("userOrganizationFileCode",that.UserInfo.userOrganizationFileCode);
-        // console.log('123456');
-        // console.log(that.UserInfo.userAddress);
-        // if(!that.checkCard(that.UserInfo.userId)){
-        //   this.$Message.warning('请输入正确的18位身份证号');
-        // }else if (that.UserInfo.userAddress === null){
-        //   this.$Message.warning('请输入详细地址');
-        // }else if(!that.checkEmail(that.UserInfo.userEmail)){
-        //   this.$Message.warning('请输入正确的邮箱地址');
-        // }else if(!that.checkName(that.UserInfo.userName)){
-        //   this.$Message.warning('请输入正确的姓名');
-        // }else {
-        //   console.log('123456');
-        console.log(that.$refs[name]);
+
+        if(that.UserInfo.userSex == '1'){
+          ResquestInfo.append("userSex",true);
+        }else {
+          ResquestInfo.append("userSex",false);
+        }
+
         that.$refs[name].validate((valid) => {
           if (valid) {
-            this.$Message.success('Success!');
+            that.VuegetResquest(that.GLOBALS.BASEINFO_SETUSERINFO,ResquestInfo,function(res){
+              console.log(res);
+              that.$Message.success('保存成功');
+            },function (res) {that.$Message.warning(res.message)})
           } else {
-            this.$Message.error('Fail!');
+            this.$Message.error('保存失败!');
           }
         })
-          // that.VuegetResquest(that.GLOBALS.BASEINFO_SETUSERINFO,ResquestInfo,function(res){
-          //   console.log(res);
-          //   that.$Message.success('保存成功');
-          // },function (res) {that.$Message.warning(res.message)})
-        // }
+
       },
     },
 
@@ -744,10 +565,6 @@
   .radio_inline {
     margin-left: 20px;
     padding-top: 5px;
-  }
-  .form_control {
-    height: 40px;
-    line-height: 40px;
   }
 
   /*我的证书*/
