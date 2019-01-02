@@ -1,8 +1,9 @@
 <template>
     <header>
+      <!--data-toggle="modal" data-target="#ModalLogin"-->
       <div class="header-body">
         <div class="header-body-button">
-          <label v-if="!Index"><a @click="getImageData()" data-toggle="modal" data-target="#ModalLogin">登录 </a>|<a @click="showRegister()"> 注册</a></label>
+          <label v-if="!Index"><a @click="showLogin()">登录 </a>|<a @click="showRegister()"> 注册</a></label>
           <label v-if="Index"><a >{{userName}} </a> | <a @click="getBaseInfo()"> 个人中心</a> | <a @click="LoginOut()">注销</a></label>
         </div>
        <div class="header-title" @click="BackHome()">云南民族大学中印瑜伽学院瑜伽非学历教育综合信息平台</div>
@@ -20,7 +21,25 @@
         </div>
       </div>
 
-      <Modal v-model="modal" title="用户注册" :loading="loading" @on-ok="SubmitRegister()" ok-text= "注册">
+      <Modal v-model="modalLogin" title="用户登录" :loading="loading" @on-ok="SubmitRegister()" ok-text= "注册" footer-hide=true>
+        <Form ref="resquesInfo" :model="resquesInfo" :rules="ruleCustom" :label-width="80">
+          <FormItem label="用户名" prop="userName">
+            <Input v-model="resquesInfo.userName" placeholder="请输入11位手机号码"></Input>
+          </FormItem>
+          <FormItem label="密码" prop="passwds">
+            <Input type="password" v-model="resquesInfo.loginKey" placeholder="请输入由数字、字母、下划线组合的不少于8位不大于20位的密码"></Input>
+          </FormItem>
+          <FormItem label="验证码" prop="VCodes" >
+            <Input class="ivu-inputs" v-model="resquesInfo.imageCode" type="text" placeholder="请输入右侧图片验证码"></Input>
+            <img :src="imageData[0]" @click="getImageData" height="34">
+          </FormItem>
+          <FormItem>
+            <Button type="primary" @click="SubmitLogin('resquesInfo')" style="margin: 20px 8px 0 0px; width: 350px;">提交</Button>
+          </FormItem>
+        </Form>
+      </Modal>
+
+      <Modal v-model="modalRegister" title="用户注册" :loading="loading" >
         <Form ref="resquesInfo" :model="resquesInfo" :rules="ruleCustom" :label-width="80">
           <FormItem label="手机号" prop="Phone">
             <Input v-model="resquesInfo.userName" placeholder="请输入11位手机号码"></Input>
@@ -39,14 +58,13 @@
             <Input class="ivu-inputs" v-model="resquesInfo.messageCode" placeholder="请输入短信验证码"></Input>
             <Button type="success" @click="getRegisterCode()" :disabled="IsSend">{{value}}</Button>
           </FormItem>
-          <!--<FormItem>-->
-            <!--<Button type="primary" @click="handleSubmit('formCustom')">Submit</Button>-->
-            <!--<Button @click="handleReset('formCustom')" style="margin-left: 8px">Reset</Button>-->
-          <!--</FormItem>-->
+          <FormItem>
+            <Button type="primary" @click="SubmitRegister('resquesInfo')" style="margin: 20px 8px 0 0px; width: 350px;">提交</Button>
+          </FormItem>
         </Form>
       </Modal>
 
-      <LoginModal  :resquesInfo="resquesInfo" :imageData="imageData" :SubmitLogin="SubmitLogin" :getImageData="getImageData" :showRegister="showRegister" :getRegisterCode="getRegisterCode"  :SubmitRegister="SubmitRegister" :value="value"></LoginModal>
+      <!--<LoginModal  :resquesInfo="resquesInfo" :imageData="imageData" :SubmitLogin="SubmitLogin" :getImageData="getImageData" :showRegister="showRegister" :getRegisterCode="getRegisterCode"  :SubmitRegister="SubmitRegister" :value="value"></LoginModal>-->
     </header>
 </template>
 
@@ -56,7 +74,26 @@
 
     export default {
       name: "Header",
-      data: function ()             {
+      data: function () {
+        // 用户名验证
+        const validateuserName = (rule, value, callback) => {
+          if (!this.checkPhone(this.resquesInfo.userName)) {
+            callback(new Error('请输入正确的11位手机号'));
+          }
+        };
+        // 密码验证
+        const validatepasswds = (rule, value, callback) => {
+          if (!this.checkPhone(this.resquesInfo.userName)) {
+            callback(new Error('请输入正确的11位手机号'));
+          }
+        };
+        // 验证码验证
+        const validateVCodes = (rule, value, callback) => {
+          if (!this.checkPhone(this.resquesInfo.userName)) {
+            callback(new Error('请输入正确的11位手机号'));
+          }
+        };
+
         // 手机号验证
         const validatePhone = (rule, value, callback) => {
           if (!this.checkPhone(this.resquesInfo.userName)) {
@@ -99,10 +136,20 @@
         };
 
         return{
-          modal: false,
+          modalLogin: false,
+          modalRegister: false,
           loading: true,
 
           ruleCustom: {
+            userName: [
+              { validator: validateuserName, trigger: 'blur' }
+            ],
+            passwds: [
+              { validator: validatepasswds, trigger: 'blur' }
+            ],
+            VCodes: [
+              { validator: validateVCodes, trigger: 'blur' }
+            ],
             Phone: [
               { validator: validatePhone, trigger: 'blur' }
             ],
@@ -128,6 +175,7 @@
           idCode: '',
           value: '获取验证码',
           imageData: ['0', '1'],
+          // 注册参数
           resquesInfo: {
             userName: '',
             loginKey: '',
@@ -142,20 +190,16 @@
 
 
       methods:{
-        handleSubmit (name) {
-          this.$refs[name].validate((valid) => {
-            if (valid) {
-              this.$Message.success('Success!');
-            } else {
-              this.$Message.error('Fail!');
-            }
-          })
-        },
+
         handleReset (name) {
           this.$refs[name].resetFields();
         },
+        showLogin(){
+          this.modalLogin = true;
+          this.getImageData();
+        },
         showRegister(){
-          this.modal = true;
+          this.modalRegister = true;
           this.getImageData();
         },
         validateField(e){
@@ -258,31 +302,38 @@
         },
 
         // 注册
-        SubmitRegister: function (e) {
+        SubmitRegister: function (name) {
           // this.modal = true;
           // console.log(this.modal);
-          this.loading = false;
+          this.$refs[name].validate((valid) => {
+            if (valid) {
+              this.loading = false;
 
-          setTimeout(() => {
-            this.loading = true;
-          }, 100);
+              setTimeout(() => {
+                this.loading = true;
+              }, 100);
 
-          const that = this;
-          var ResquestInfo = new URLSearchParams();
-          ResquestInfo.append("phone", that.resquesInfo.userName);
-          ResquestInfo.append("loginKey", that.resquesInfo.loginKey);
-          ResquestInfo.append("phoneCode", e);
+              const that = this;
+              var ResquestInfo = new URLSearchParams();
+              ResquestInfo.append("phone", that.resquesInfo.userName);
+              ResquestInfo.append("loginKey", that.resquesInfo.loginKey);
+              ResquestInfo.append("phoneCode", e);
 
-            that.VuegetResquest(that.GLOBALS.LOGIN_USERREGISTER, ResquestInfo, function (res) {
-              that.$Message.success(res);
-              if (res.code === 10000) {
-                $('#ModalLogin').popover('hide');
-                $('#ModalRegister').popover('hide');
-              }
-            }, function (res) {
-              that.$Message.warning(res.message);
-            });
-            // that.value = '获取验证码'
+              that.VuegetResquest(that.GLOBALS.LOGIN_USERREGISTER, ResquestInfo, function (res) {
+                that.$Message.success(res);
+                if (res.code === 10000) {
+                  $('#ModalLogin').popover('hide');
+                  $('#ModalRegister').popover('hide');
+                }
+              }, function (res) {
+                that.$Message.warning(res.message);
+              });
+              // that.value = '获取验证码'
+            } else {
+              this.$Message.error('Fail!');
+            }
+          })
+
         },
 
         // 注销
