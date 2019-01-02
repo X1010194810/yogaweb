@@ -100,7 +100,7 @@
             callback(new Error('请输入正确的11位手机号'));
           }
         };
-
+ 
         // 密码判断
         const validatePass = (rule, value, callback) => {
           if (!this.checkPassword(this.resquesInfo.loginKey)) {
